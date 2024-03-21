@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Spin Wheel Example</title>
+    <style>
+      .arrow-container {
+        text-align: center;
+      }
+      .arrow {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-top: 40px solid black; /* Arrow color */
+        margin-bottom: -50px; /* Adjust based on arrow size and wheel positioning */
+      }
+      .wheel-container {
+        margin-top: 40px; /* Ensure there's enough space for the arrow */
+      }
+    </style>
+</head>
+<body>
+    <div class="arrow-container">
+        <div class="arrow"></div>
+    </div>
+    <div class="wheel-container"></div>
+
+    <form id="wheelForm">
+        <h3>Enter Wheel Items (one per line):</h3>
+        <textarea id="itemNames" rows="10" cols="30"></textarea>
+        <br>
+        <button type="submit">Update Wheel</button>
+        <button type="button" id="spinButton">Spin the Wheel</button>
+
+    </form>
+
+    <script src="./dist/bundle.js"></script>
+
+
+</body>
+</html>
+
+
