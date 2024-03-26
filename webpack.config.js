@@ -1,44 +1,67 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin'); // Import the plugin
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 
 module.exports = {
-  entry: './src/index.js', // The entry point of your application
-  output: {
-    filename: 'bundle.js', // The output bundle
-    path: path.resolve(__dirname, 'dist'), // Output directory
+  entry: {
+    main: './src/index.js',
+    // Define other entry points if necessary
   },
-  module: {
+  output: {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },  module: {
     rules: [
+
       {
-        test: /\.js$/, // Apply this rule to JavaScript files
+        test: /\.html$/,
+        use: ['html-loader'], // Add this loader for HTML files
+      },
+      {
+        test: /\.js$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env'], // Use the preset-env preset for Babel
+            presets: ['@babel/preset-env'],
           },
         },
       },
       {
-        test: /\.css$/, // Apply this rule to CSS files
-        use: ['style-loader', 'css-loader'], // Use these loaders for CSS files
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i, // Apply this rule to image files
-        type: 'asset/resource', // Use 'asset/resource' to emit a separate file
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+      },
+
+      {
+        test: /\.scss$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
       },
       {
-        test: /\.(woff|woff2|eot|ttf|otf)$/i, // Apply this rule to font files
-        type: 'asset/resource', // Use 'asset/resource' to emit a separate file
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
       },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html', // Path to your source index.html
-      filename: 'index.html', // Output HTML file name
+      template: './src/index.html',
+      filename: 'index.html',
+      inject: 'body', // Injects the script at the end of the <body> tag
     }),
-    // Add other plugins as needed
+    // Add another HtmlWebpackPlugin instance for contact.html
+    new HtmlWebpackPlugin({
+      template: './src/contact.html', // Source of your contact.html file
+      filename: 'contact.html', // The name of the output file
+      inject: 'body', // This is optional if you don't need to inject any scripts into contact.html
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'output.css', // Output CSS file names
+    }),
   ],
-  mode: 'production', // Set to 'production' for optimized builds
+  mode: 'production',
 };

@@ -1,15 +1,210 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>Dynamic Spin Wheel Example</title><style>.arrow-container {
-        text-align: center;
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><title>Dynamic Spin Wheel Example</title><style>body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  background-color: #333;
+  padding: 10px;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+nav ul li {
+  margin-right: 20px;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.container {
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.arrow-container {
+  display: inline-block;
+}
+
+.arrow {
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 40px solid #ff6b6b;
+  margin: 0 auto;
+}
+
+.wheel-container {
+  width: 400px;
+  height: 400px;
+  position: relative;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 10px solid #4ecdc4;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.wheel-item {
+  transition: transform 0.3s ease-in-out;
+}
+
+.wheel-item.winner {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+form {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+button {
+  border: none;
+  outline: none;
+  background-color: #6c5ce7;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  border-radius: 5px;
+  transition: all ease 0.1s;
+  box-shadow: 0px 5px 0px 0px #a29bfe;
+}
+
+button:active {
+  transform: translateY(5px);
+  box-shadow: 0px 0px 0px 0px #a29bfe;
+}
+
+button:hover {
+  background-color: #ff4f4f;
+}
+
+#winnerDisplay {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #4ecdc4;
+}</style></head><body><header><nav><ul><li><a href="#home">Home</a></li><li><a href="#contact.html">Contact</a></li></ul></nav></header><main><div class="container"><div class="header"><h1>Dynamic Spin Wheel</h1><div class="arrow-container"><div class="arrow"></div></div></div><div class="wheel-container"></div><form id="wheelForm"><h3>Enter Wheel Items (one per line):</h3><textarea id="itemNames" rows="10" cols="30"></textarea><div id="winnerDisplay"></div><button type="submit">Update Wheel</button> <button type="button" id="spinButton">Spin the Wheel</button></form></div></main><script>document.addEventListener('DOMContentLoaded', function () { const wheelContainer = document.querySelector('.wheel-container'); const itemNamesTextarea = document.getElementById('itemNames'); const wheelForm = document.getElementById('wheelForm'); const spinButton = document.getElementById('spinButton'); const winnerDisplay = document.getElementById('winnerDisplay');
+
+
+let wheelItems = [];
+
+  function createWheel() {
+    wheelContainer.innerHTML = '';
+    const numItems = wheelItems.length;
+    const angleStep = 360 / numItems;
+    let currentAngle = 0;
+
+    wheelItems.forEach((item, index) => {
+      const wheelItem = document.createElement('div');
+      wheelItem.classList.add('wheel-item');
+      wheelItem.style.transform = `rotate(${currentAngle}deg) translate(150px) rotate(-${currentAngle}deg)`;
+      wheelItem.style.backgroundColor = `hsl(${(index * 360) / numItems}, 50%, 50%)`;
+      wheelItem.style.position = 'absolute';
+      wheelItem.style.width = '200px';
+      wheelItem.style.height = '200px';
+      wheelItem.style.transformOrigin = 'bottom center';
+      wheelItem.style.clipPath = `polygon(0% 0%, 100% 0%, 50% 100%)`;
+      wheelItem.style.display = 'flex';
+      wheelItem.style.justifyContent = 'center';
+      wheelItem.style.alignItems = 'center';
+      wheelItem.style.textAlign = 'center';
+      wheelItem.style.color = 'white';
+      wheelItem.style.fontWeight = 'bold';
+      wheelItem.textContent = item;
+      wheelContainer.appendChild(wheelItem);
+      currentAngle += angleStep;
+    });
+  }
+
+  function updateWheel(event) {
+    event.preventDefault();
+    const itemNames = itemNamesTextarea.value.split('\n').filter((item) => item.trim() !== '');
+    wheelItems = itemNames;
+    createWheel();
+  }
+
+function spinWheel() {
+  const wheelItems = document.querySelectorAll('.wheel-item');
+  const numRotations = Math.floor(Math.random() * 5) + 5; // Random number of rotations (5-10)
+  const rotationAngle = numRotations * 360;
+  const winnerIndex = Math.floor(Math.random() * wheelItems.length);
+  const winnerRotationAngle = (360 / wheelItems.length) * winnerIndex;
+  const totalRotationAngle = rotationAngle + winnerRotationAngle;
+
+  wheelContainer.style.transition = 'transform 5s ease-out';
+  wheelContainer.style.transform = `rotate(-${totalRotationAngle}deg)`;
+
+  setTimeout(() => {
+    if (winnerIndex >= 0 && winnerIndex < wheelItems.length) {
+      const winner = wheelItems[winnerIndex];
+      winnerDisplay.textContent = `Winner: ${winner.textContent}`;
+
+      // Reset previous winner's style
+      const prevWinner = document.querySelector('.wheel-item.winner');
+      if (prevWinner) {
+        prevWinner.classList.remove('winner');
       }
-      .arrow {
-        display: inline-block;
-        width: 0;
-        height: 0;
-        border-left: 20px solid transparent;
-        border-right: 20px solid transparent;
-        border-top: 40px solid black; /* Arrow color */
-        margin-bottom: -50px; /* Adjust based on arrow size and wheel positioning */
-      }
-      .wheel-container {
-        margin-top: 40px; /* Ensure there's enough space for the arrow */
-      }</style><script defer="defer" src="bundle.js"></script></head><body><div class="arrow-container"><div class="arrow"></div></div><div class="wheel-container"></div><form id="wheelForm"><h3>Enter Wheel Items (one per line):</h3><textarea id="itemNames" rows="10" cols="30"></textarea><br><button type="submit">Update Wheel</button> <button type="button" id="spinButton">Spin the Wheel</button></form></body></html>
+
+      // Apply winner style to the selected item
+      winner.classList.add('winner');
+    } else {
+      console.error('Invalid winner index');
+    }
+  }, 5000);
+}
+  wheelForm.addEventListener('submit', updateWheel);
+  spinButton.addEventListener('click', spinWheel);
+});</script><script defer="defer" src="bundle.js"></script></body></html>

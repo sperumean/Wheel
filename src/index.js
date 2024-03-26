@@ -1,44 +1,68 @@
 import { Wheel } from 'spin-wheel';
+import './output.css';
+import './index.html';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const container = document.querySelector('.wheel-container');
-    let wheel; // Declare the wheel variable here to be accessible throughout
-    const colorScheme = ['#FF5733', '#33FF57', '#3357FF', '#F033FF', '#FF33F6'];
+  const container = document.querySelector('.wheel-container');
+  let wheel;
+  let items; // Declare items at a higher scope to be accessible in other functions
+  const colorScheme = ['#FF5733', '#33FF57', '#3357FF', '#F033FF', '#FF33F6'];
 
-    document.getElementById('wheelForm').addEventListener('submit', (event) => {
-        event.preventDefault();
-        
-        const names = document.getElementById('itemNames').value.split('\n').filter(Boolean);
-        const items = names.map((name, index) => ({
-            label: name.trim(),
-            backgroundColor: colorScheme[index % colorScheme.length],
-        }));
+  const createWheel = () => {
+    const names = document.getElementById('itemNames').value.split('\n').filter(Boolean);
+    items = names.map((name, index) => ({
+      label: name.trim(),
+      backgroundColor: colorScheme[index % colorScheme.length],
+      defaultColor: colorScheme[index % colorScheme.length], // Storing original color
+    }));
 
-        // Ensure the wheel is created here with the new items
-        container.innerHTML = ''; // Clear previous wheel, if any
-        wheel = new Wheel(container, { items });
-        console.log('Wheel initialized', wheel);
-    }); // Ensure this closing bracket matches with the opening bracket of the event listener
+    container.innerHTML = '';
+    wheel = new Wheel(container, {
+      items,
+      //overlayImage: 'https://www.pngplay.com/wp-content/uploads/5/Dot-Symbol-Free-PNG.png', // Add your image URL here
+    });
+    console.log('Wheel initialized', wheel);
+  };
 
-    document.getElementById('spinButton').addEventListener('click', () => {
-        console.log('Spin button clicked');
-        if (!wheel) {
-            console.log('Wheel not initialized');
-            alert("Please create the wheel first by submitting the form.");
-            return;
-        }
-        const initialSpeed = 700 + Math.random() * 200; // Initial speed between 20 and 30
+  document.getElementById('wheelForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    createWheel();
+  });
 
-        const duration = 10000;
-        console.log('Spinning wheel...');
-        wheel.spin(initialSpeed, duration);
+// ... other parts of your script ...
 
-        setTimeout(() => {
-            const winnerIndex = wheel.getCurrentIndex();
-            console.log(`Winner index: ${winnerIndex}`);
-            alert(`The winner is: ${wheel.items[winnerIndex].label}!`);
-        }, duration);
-    }); // Ensure this closing bracket matches with the opening bracket of the event listener
-}); // Ensure this closing bracket matches with the opening bracket of the 'DOMContentLoaded' event listener
+document.getElementById('spinButton').addEventListener('click', () => {
+  if (!wheel) {
+    alert("Please create the wheel first by submitting the form.");
+    return;
+  }
 
+  const initialSpeed = 700 + Math.random() * 200;
+  const duration = 10000;
 
+  wheel.spin(initialSpeed, duration);
+
+  setTimeout(() => {
+    const winnerIndex = wheel.getCurrentIndex();
+    const winnerDisplay = document.getElementById('winnerDisplay'); // Reference to the winner display div
+
+    if (winnerIndex !== undefined && items && winnerIndex < items.length) {
+      // Update the wheel with the new colors
+      items.forEach((item, index) => {
+        item.backgroundColor = index === winnerIndex ? '#FFFF00' : item.defaultColor; // '#FFFF00' is the highlight color
+      });
+
+      // Redraw the wheel with updated colors
+      wheel.init({ items }); // Reinitialize the wheel with the updated items array
+
+      // Display the winner on the page
+      winnerDisplay.textContent = `The winner is: ${items[winnerIndex].label}!`;
+      winnerDisplay.style.display = 'block'; // Make the winner display visible
+
+    } else {
+      console.error('Winner element not found or items are not properly defined');
+    }
+  }, duration);
+});
+
+});
