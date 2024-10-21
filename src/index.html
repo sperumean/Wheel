@@ -1,231 +1,340 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Dynamic Spin Wheel</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    header {
-      background-color: #333;
-      padding: 10px;
-    }
-    nav ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-    }
-    nav ul li {
-      margin-right: 20px;
-    }
-    nav ul li a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 18px;
-    }
-    main {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    .container {
-      text-align: center;
-    }
-    .header {
-      margin-bottom: 20px;
-    }
-    h1 {
-      color: #333;
-      margin-bottom: 10px;
-    }
-    .arrow-container {
-      display: inline-block;
-    }
-    .arrow {
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-top: 40px solid #ff6b6b;
-      margin: 0 auto;
-    }
-    .wheel-container {
-      width: 400px;
-      height: 400px;
-      position: relative;
-      margin: 0 auto;
-      overflow: hidden;
-      border: 10px solid #4ecdc4;
-      border-radius: 50%;
-      background-color: #fff;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    }
-    .form {
-      max-width: 400px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    h3 {
-      margin-top: 0;
-      color: #333;
-    }
-    textarea, button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px; /* Added margin-bottom for spacing */
-    }
-    textarea {
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      resize: vertical;
-    }
-    button {
-      border: none;
-      background-color: #6c5ce7;
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      border-radius: 5px;
-      transition: all ease 0.1s;
-      box-shadow: 0px 5px 0px 0px #a29bfe;
-      cursor: pointer; /* Ensures the cursor changes to pointer on hover */
-    }
-    button:active {
-      transform: translateY(5px);
-      box-shadow: 0px 0px 0px 0px #a29bfe;
-    }
-    button:hover {
-      background-color: #ff4f4f;
-    }
-    #winnerDisplay {
-      margin-bottom: 20px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      color: #4ecdc4;
-    }
-
-
-  </style>
+    <meta charset="UTF-8"/>
+    <title>Dynamic Spin Wheel Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #333;
+            padding: 10px;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin-right: 20px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .arrow-container {
+            display: inline-block;
+        }
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #ff6b6b;
+            margin: 0 auto;
+        }
+		.wheel-container {
+			width: 400px;
+			height: 400px;
+			position: relative;
+			margin: 0 auto;
+			border-radius: 50%;
+			overflow: hidden;
+			border: 10px solid #4ecdc4;
+			background-color: #fff;
+			box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+		}
+        .wheel-item {
+            transition: transform 0.3s ease-in-out;
+        }
+        .wheel-item.winner {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button {
+            border: none;
+            outline: none;
+            background-color: #6c5ce7;
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            border-radius: 5px;
+            transition: all ease 0.1s;
+            box-shadow: 0px 5px 0px 0px #a29bfe;
+            margin: 5px;
+            cursor: pointer;
+        }
+        button:active {
+            transform: translateY(5px);
+            box-shadow: 0px 0px 0px 0px #a29bfe;
+        }
+        button:hover {
+            background-color: #ff4f4f;
+        }
+        #winnerDisplay {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+        #cart {
+            margin-top: 20px;
+            text-align: left;
+        }
+        #cartItems {
+            list-style-type: none;
+            padding: 0;
+        }
+        #totalDisplay, #discountedTotalDisplay {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <nav>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main>
-    <div class="container">
-      <div class="header">
-        <h1 style="color: white;">Spin Wheel</h1>
-        <div class="arrow-container">
-          <div class="arrow"></div>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+            <div class="header">
+                <h1>Dynamic Spin Wheel</h1>
+                <div class="arrow-container">
+                    <div class="arrow"></div>
+                </div>
+            </div>
+            <div class="wheel-container"></div>
+            <form id="wheelForm">
+                <h3>Enter Wheel Items (one per line):</h3>
+                <textarea id="itemNames" rows="10" cols="30"></textarea>
+                <div id="winnerDisplay"></div>
+                <button type="submit">Update Wheel</button>
+                <button type="button" id="spinButton">Spin the Wheel</button>
+            </form>
+            <button id="generateItemsButton">Generate Random Items</button>
+            <div id="cart">
+                <h2>Your Cart:</h2>
+                <ul id="cartItems"></ul>
+                <p id="totalDisplay">Total: $0.00</p>
+                <p id="discountedTotalDisplay">Discounted Total: $0.00</p>
+            </div>
         </div>
-      </div>
-      <div class="wheel-container"></div>
-      <form id="wheelForm">
-        <h3 style="color: white;">Enter Wheel Items (one per line):</h3>
-        <textarea id="itemNames" rows="10" cols="30"></textarea>
-        <div id="winnerDisplay"></div>
-        <button type="submit">Update Wheel</button>
-        <button type="button" id="spinButton">Spin the Wheel</button>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const wheelContainer = document.querySelector('.wheel-container');
+            const itemNamesTextarea = document.getElementById('itemNames');
+            const wheelForm = document.getElementById('wheelForm');
+            const spinButton = document.getElementById('spinButton');
+            const winnerDisplay = document.getElementById('winnerDisplay');
+            const generateItemsButton = document.getElementById('generateItemsButton');
+            const cartItemsList = document.getElementById('cartItems');
+            const totalDisplay = document.getElementById('totalDisplay');
+            const discountedTotalDisplay = document.getElementById('discountedTotalDisplay');
 
+            let wheelItems = [];
+            let cartItems = [];
+            let totalAmount = 0;
+            let currentRotation = 0;
 
+			function createWheel() {
+				wheelContainer.innerHTML = '';
+				const numItems = wheelItems.length;
+				const angleStep = 360 / numItems;
+				let currentAngle = 0;
 
+				const svgNS = "http://www.w3.org/2000/svg";
+				const svg = document.createElementNS(svgNS, "svg");
+				svg.setAttribute("width", "100%");
+				svg.setAttribute("height", "100%");
+				svg.setAttribute("viewBox", "-1 -1 2 2");
+				svg.style.transform = "rotate(-90deg)";
 
-      </form>
-    </div>
-  </main>
+				wheelItems.forEach((item, index) => {
+					const sliceGroup = document.createElementNS(svgNS, "g");
+					
+					const slicePath = document.createElementNS(svgNS, "path");
+					const startAngle = currentAngle * Math.PI / 180;
+					const endAngle = (currentAngle + angleStep) * Math.PI / 180;
+					const x1 = Math.cos(startAngle);
+					const y1 = Math.sin(startAngle);
+					const x2 = Math.cos(endAngle);
+					const y2 = Math.sin(endAngle);
+					const largeArcFlag = angleStep > 180 ? 1 : 0;
+					const pathData = `M 0 0 L ${x1} ${y1} A 1 1 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+					
+					slicePath.setAttribute("d", pathData);
+					slicePath.setAttribute("fill", `hsl(${(index * 360) / numItems}, 70%, 60%)`);
+					
+					const text = document.createElementNS(svgNS, "text");
+					const textAngle = currentAngle + angleStep / 2;
+					const textRadius = 0.7;  // Adjust this value to position the text
+					const textX = Math.cos(textAngle * Math.PI / 180) * textRadius;
+					const textY = Math.sin(textAngle * Math.PI / 180) * textRadius;
+					
+					text.setAttribute("x", textX);
+					text.setAttribute("y", textY);
+					text.setAttribute("text-anchor", "middle");
+					text.setAttribute("dominant-baseline", "middle");
+					text.setAttribute("fill", "white");
+					text.setAttribute("font-size", "0.15");
+					text.setAttribute("transform", `rotate(${90 + textAngle} ${textX} ${textY})`);
+					text.textContent = item;
+					
+					sliceGroup.appendChild(slicePath);
+					sliceGroup.appendChild(text);
+					svg.appendChild(sliceGroup);
+					
+					currentAngle += angleStep;
+				});
 
+				wheelContainer.appendChild(svg);
+			}
 
-<script> document.addEventListener('DOMContentLoaded', function () { const wheelContainer = document.querySelector('.wheel-container'); const itemNamesTextarea = document.getElementById('itemNames'); const wheelForm = document.getElementById('wheelForm'); const spinButton = document.getElementById('spinButton'); const winnerDisplay = document.getElementById('winnerDisplay');
+            function updateWheel(event) {
+                event.preventDefault();
+                const itemNames = itemNamesTextarea.value.split('\n').filter((item) => item.trim() !== '');
+                wheelItems = itemNames.length > 0 ? itemNames : ['10%', '20%', '30%', '40%', '50%'];
+                createWheel();
+            }
 
+			function spinWheel() {
+				if (totalAmount === 0) {
+					alert('Please generate items before spinning the wheel.');
+					return;
+				}
 
-let wheelItems = [];
+				const svg = wheelContainer.querySelector('svg');
+				const numSegments = wheelItems.length;
+				const numRotations = Math.floor(Math.random() * 5) + 5;
+				const rotationAngle = numRotations * 360 + Math.random() * 360;
 
-  function createWheel() {
-    wheelContainer.innerHTML = '';
-    const numItems = wheelItems.length;
-    const angleStep = 360 / numItems;
-    let currentAngle = 0;
+				currentRotation += rotationAngle;
 
-    wheelItems.forEach((item, index) => {
-      const wheelItem = document.createElement('div');
-      wheelItem.classList.add('wheel-item');
-      wheelItem.style.transform = `rotate(${currentAngle}deg) translate(150px) rotate(-${currentAngle}deg)`;
-      wheelItem.style.backgroundColor = `hsl(${(index * 360) / numItems}, 50%, 50%)`;
-      wheelItem.style.position = 'absolute';
-      wheelItem.style.width = '200px';
-      wheelItem.style.height = '200px';
-      wheelItem.style.transformOrigin = 'bottom center';
-      wheelItem.style.clipPath = `polygon(0% 0%, 100% 0%, 50% 100%)`;
-      wheelItem.style.display = 'flex';
-      wheelItem.style.justifyContent = 'center';
-      wheelItem.style.alignItems = 'center';
-      wheelItem.style.textAlign = 'center';
-      wheelItem.style.color = 'white';
-      wheelItem.style.fontWeight = 'bold';
-      wheelItem.textContent = item;
-      wheelContainer.appendChild(wheelItem);
-      currentAngle += angleStep;
-    });
-  }
+				svg.style.transition = 'transform 5s ease-out';
+				svg.style.transform = `rotate(${currentRotation - 90}deg)`;
 
-  function updateWheel(event) {
-    event.preventDefault();
-    const itemNames = itemNamesTextarea.value.split('\n').filter((item) => item.trim() !== '');
-    wheelItems = itemNames;
-    createWheel();
-  }
+				setTimeout(() => {
+					const normalizedRotation = (currentRotation % 360 + 360) % 360; // Ensure positive value
+					const anglePerSegment = 360 / numSegments;
+					const winningIndex = (numSegments - 1) - Math.floor(normalizedRotation / anglePerSegment);
 
-function spinWheel() {
-  const wheelItems = document.querySelectorAll('.wheel-item');
-  const numRotations = Math.floor(Math.random() * 5) + 5; // Random number of rotations (5-10)
-  const rotationAngle = numRotations * 360;
-  const winnerIndex = Math.floor(Math.random() * wheelItems.length);
-  const winnerRotationAngle = (360 / wheelItems.length) * winnerIndex;
-  const totalRotationAngle = rotationAngle + winnerRotationAngle;
+					if (winningIndex >= 0 && winningIndex < numSegments) {
+						const winner = wheelItems[winningIndex];
 
-  wheelContainer.style.transition = 'transform 5s ease-out';
-  wheelContainer.style.transform = `rotate(-${totalRotationAngle}deg)`;
+						winnerDisplay.textContent = `You won a ${winner} discount!`;
 
-  setTimeout(() => {
-    if (winnerIndex >= 0 && winnerIndex < wheelItems.length) {
-      const winner = wheelItems[winnerIndex];
-      winnerDisplay.textContent = `Winner: ${winner.textContent}`;
+						let discountedTotal = totalAmount;
+						if (winner.endsWith('%')) {
+							const discountPercentage = parseFloat(winner) / 100;
+							discountedTotal = totalAmount * (1 - discountPercentage);
+						} else {
+							const discountAmount = parseFloat(winner);
+							if (!isNaN(discountAmount)) {
+								discountedTotal = totalAmount - discountAmount;
+								if (discountedTotal < 0) discountedTotal = 0;
+							}
+						}
 
-      // Reset previous winner's style
-      const prevWinner = document.querySelector('.wheel-item.winner');
-      if (prevWinner) {
-        prevWinner.classList.remove('winner');
-      }
+						discountedTotalDisplay.textContent = `Discounted Total: $${discountedTotal.toFixed(2)}`;
+						
+						// Highlight the winning segment
+						const segments = svg.querySelectorAll('path');
+						segments.forEach((segment, index) => {
+							if (index === winningIndex) {
+								segment.setAttribute('stroke', '#FFD700');
+								segment.setAttribute('stroke-width', '0.05');
+							} else {
+								segment.removeAttribute('stroke');
+								segment.removeAttribute('stroke-width');
+							}
+						});
+					} else {
+						console.error('Invalid winner index:', winningIndex);
+					}
+				}, 5000);
+			}
 
-      // Apply winner style to the selected item
-      winner.classList.add('winner');
-    } else {
-      console.error('Invalid winner index');
-    }
-  }, 5000);
-}
-  wheelForm.addEventListener('submit', updateWheel);
-  spinButton.addEventListener('click', spinWheel);
-});
+            function generateRandomItems() {
+                cartItemsList.innerHTML = '';
+                cartItems = [];
+                totalAmount = 0;
+                const numItems = Math.floor(Math.random() * 5) + 1;
 
-</script> </body> </html>
+                for (let i = 0; i < numItems; i++) {
+                    const itemPrice = (Math.random() * 100 + 1).toFixed(2);
+                    cartItems.push(parseFloat(itemPrice));
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `Item ${i + 1}: $${itemPrice}`;
+                    cartItemsList.appendChild(listItem);
+                    totalAmount += parseFloat(itemPrice);
+                }
+
+                totalDisplay.textContent = `Total: $${totalAmount.toFixed(2)}`;
+                discountedTotalDisplay.textContent = 'Discounted Total: $0.00';
+                winnerDisplay.textContent = '';
+            }
+
+            wheelForm.addEventListener('submit', updateWheel);
+            spinButton.addEventListener('click', spinWheel);
+            generateItemsButton.addEventListener('click', generateRandomItems);
+
+            // Initialize the wheel with default items
+            itemNamesTextarea.value = '10%\n20%\n30%\n40%\n50%';
+            updateWheel(new Event('submit'));
+        });
+    </script>
+</body>
+</html>
