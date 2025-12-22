@@ -4,4 +4,162 @@
 
 
 
+cat > /tmp/windows_sso_setup.ps1 << 'POWERSHELL'
+#Requires -RunAsAdministrator
+<#
+.SYNOPSIS
+    Configure Windows VM for Scholar-Secure Kerberos SSO
+.DESCRIPTION
+    - Enables RestrictedAdmin mode for RDP
+    - Joins domain (optional)
+    - Adds domain group to local Administrators
+    - Enables RDP and configures firewall
+    - Sets hostname (optional)
+.EXAMPLE
+    .\Setup-ScholarSecureVM.ps1 -Hostname "LAB-VM-101" -JoinDomain
+.EXAMPLE
+    .\Setup-ScholarSecureVM.ps1 -SkipDomainJoin
+#>
+
+param(
+    [string]$Hostname,
+    [switch]$JoinDomain,
+    [switch]$SkipDomainJoin,
+    [string]$DomainName = "SCHOLARSECURE.LOCAL",
+    [string]$DomainOU = "OU=Lab VMs,DC=scholarsecure,DC=local",
+    [string]$AdminGroup = "SCHOLARSECURE\Domain Users",
+    [string]$DCAddress = "192.168.50.11"
+)
+
+$ErrorActionPreference = "Stop"
+
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "Scholar-Secure VM SSO Setup" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+
+# 1. Set hostname if provided
+if ($Hostname) {
+    Write-Host "`n[1/6] Setting hostname to: $Hostname" -ForegroundColor Yellow
+    if ($env:COMPUTERNAME -ne $Hostname) {
+        Rename-Computer -NewName $Hostname -Force
+        Write-Host "  Hostname will change after reboot" -ForegroundColor Green
+    } else {
+        Write-Host "  Hostname already set" -ForegroundColor Green
+    }
+} else {
+    Write-Host "`n[1/6] Skipping hostname (not specified)" -ForegroundColor Gray
+}
+
+# 2. Configure DNS to point to DC
+Write-Host "`n[2/6] Configuring DNS to point to DC ($DCAddress)" -ForegroundColor Yellow
+$adapters = Get-NetAdapter | Where-Object { $_.Status -eq "Up" }
+foreach ($adapter in $adapters) {
+    Set-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -ServerAddresses $DCAddress
+    Write-Host "  Set DNS on $($adapter.Name)" -ForegroundColor Green
+}
+
+# 3. Enable RestrictedAdmin Mode (CRITICAL for Kerberos SSO)
+Write-Host "`n[3/6] Enabling RestrictedAdmin Mode" -ForegroundColor Yellow
+$regPath = "HKLM:\System\CurrentControlSet\Control\Lsa"
+$regName = "DisableRestrictedAdmin"
+
+# Create key if it doesn't exist
+if (!(Test-Path $regPath)) {
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set value to 0 (enabled)
+Set-ItemProperty -Path $regPath -Name $regName -Value 0 -Type DWord
+$value = Get-ItemProperty -Path $regPath -Name $regName -ErrorAction SilentlyContinue
+if ($value.DisableRestrictedAdmin -eq 0) {
+    Write-Host "  RestrictedAdmin enabled successfully" -ForegroundColor Green
+} else {
+    Write-Host "  WARNING: Could not verify RestrictedAdmin setting" -ForegroundColor Red
+}
+
+# 4. Enable Remote Desktop
+Write-Host "`n[4/6] Enabling Remote Desktop" -ForegroundColor Yellow
+
+# Enable RDP
+Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -Value 0
+Write-Host "  RDP enabled" -ForegroundColor Green
+
+# Disable NLA requirement (optional - makes testing easier)
+Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 0
+Write-Host "  NLA requirement disabled" -ForegroundColor Green
+
+# Enable firewall rules
+Enable-NetFirewallRule -DisplayGroup "Remote Desktop" -ErrorAction SilentlyContinue
+Write-Host "  Firewall rules enabled" -ForegroundColor Green
+
+# 5. Join Domain (if requested)
+if ($JoinDomain -and !$SkipDomainJoin) {
+    Write-Host "`n[5/6] Joining domain: $DomainName" -ForegroundColor Yellow
+    
+    # Test DC connectivity
+    if (Test-Connection -ComputerName $DCAddress -Count 1 -Quiet) {
+        Write-Host "  DC is reachable" -ForegroundColor Green
+        
+        # Prompt for credentials
+        Write-Host "  Enter domain admin credentials:" -ForegroundColor Yellow
+        $cred = Get-Credential -Message "Domain Admin for $DomainName"
+        
+        try {
+            if ($DomainOU) {
+                Add-Computer -DomainName $DomainName -Credential $cred -OUPath $DomainOU -Force
+            } else {
+                Add-Computer -DomainName $DomainName -Credential $cred -Force
+            }
+            Write-Host "  Domain join successful (reboot required)" -ForegroundColor Green
+        } catch {
+            Write-Host "  Domain join failed: $_" -ForegroundColor Red
+        }
+    } else {
+        Write-Host "  ERROR: Cannot reach DC at $DCAddress" -ForegroundColor Red
+    }
+} else {
+    Write-Host "`n[5/6] Skipping domain join" -ForegroundColor Gray
+}
+
+# 6. Add domain group to local Administrators
+Write-Host "`n[6/6] Adding $AdminGroup to local Administrators" -ForegroundColor Yellow
+try {
+    Add-LocalGroupMember -Group "Administrators" -Member $AdminGroup -ErrorAction SilentlyContinue
+    Write-Host "  Added $AdminGroup to Administrators" -ForegroundColor Green
+} catch {
+    if ($_.Exception.Message -match "already a member") {
+        Write-Host "  $AdminGroup is already a member" -ForegroundColor Green
+    } else {
+        Write-Host "  Note: Will work after domain join and reboot" -ForegroundColor Yellow
+    }
+}
+
+# Summary
+Write-Host "`n========================================" -ForegroundColor Cyan
+Write-Host "Setup Complete!" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host @"
+
+Configuration Applied:
+  [x] RestrictedAdmin Mode: Enabled
+  [x] Remote Desktop: Enabled
+  [x] DNS: $DCAddress
+  [x] Admin Group: $AdminGroup
+
+Next Steps:
+  1. Reboot this VM
+  2. On DC, add SPN for this VM:
+     sudo samba-tool delegation add-service svc_guacd 'TERMSRV/$env:COMPUTERNAME'
+     sudo samba-tool delegation add-service svc_guacd 'TERMSRV/$env:COMPUTERNAME.$($DomainName.ToLower())'
+  3. Test Kerberos SSO from Scholar-Secure
+
+"@ -ForegroundColor White
+
+$reboot = Read-Host "Reboot now? (y/n)"
+if ($reboot -eq "y") {
+    Restart-Computer -Force
+}
+POWERSHELL
+
+cat /tmp/windows_sso_setup.ps1
 
