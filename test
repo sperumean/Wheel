@@ -1,3 +1,8 @@
+$cred = Get-Credential
+Rename-Computer -NewName "WIN101-01" -DomainCredential $cred -Restart
+
+
+
 # Set DNS to dc02
 Set-DnsClientServerAddress -InterfaceAlias "Ethernet*" -ServerAddresses 192.168.50.11
 
@@ -208,6 +213,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
