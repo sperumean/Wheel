@@ -1,4 +1,7 @@
 
+Get-WinEvent -LogName Security -MaxEvents 10 | Where-Object {$_.Id -eq 4625} | Format-List TimeCreated, Message
+
+
 Get-WinEvent -LogName Security -MaxEvents 50 | Where-Object {$_.Properties[5].Value -eq 'teststudent01'} | Select-Object TimeCreated, Id
 
 # Allow multiple RDP sessions
@@ -196,6 +199,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
