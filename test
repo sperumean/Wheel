@@ -4,7 +4,8 @@ Get-WinEvent -LogName Security -MaxEvents 50 | Where-Object {$_.Id -in 4624,4625
 
 
 
-
+Add-LocalGroupMember -Group "Administrators" -Member "SCHOLARSECURE\Domain Users"
+net localgroup Administrators
 
 cat > /tmp/windows_sso_setup.ps1 << 'POWERSHELL'
 #Requires -RunAsAdministrator
@@ -164,5 +165,6 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
