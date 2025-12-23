@@ -1,4 +1,12 @@
 
+# Allow multiple RDP sessions
+Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fSingleSessionPerUser" -Value 0
+
+# Also enable remote desktop services to allow concurrent sessions
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fSingleSessionPerUser" -Value 0 -ErrorAction SilentlyContinue
+
+
+
 Get-WinEvent -LogName "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational" -MaxEvents 10 | Format-Table TimeCreated, Id, Message -Wrap
 
 Get-WinEvent -LogName Security -MaxEvents 30 | Where-Object {$_.Id -in 4624,4625,4634} | Select-Object -First 10 TimeCreated, Id, @{N='Account';E={$_.Properties[5].Value}}, @{N='LogonType';E={$_.Properties[8].Value}}, @{N='Source';E={$_.Properties[18].Value}}
@@ -186,6 +194,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
