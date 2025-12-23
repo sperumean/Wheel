@@ -1,3 +1,9 @@
+# Check for any errors around the login time
+Get-WinEvent -LogName "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational" -MaxEvents 20 | Format-Table TimeCreated, Id, Message -Wrap
+
+# Check for any failed logon scripts
+Get-WinEvent -LogName Application -MaxEvents 20 | Where-Object {$_.LevelDisplayName -eq "Error"} | Format-Table TimeCreated, Message -Wrap
+
 hostname
 net localgroup Administrators
 Get-WinEvent -LogName Security -MaxEvents 50 | Where-Object {$_.Id -in 4624,4625,4634} | Select-Object -First 10 TimeCreated, Id, @{N='Account';E={$_.Properties[5].Value}}, @{N='LogonType';E={$_.Properties[8].Value}}
@@ -165,6 +171,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
