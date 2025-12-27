@@ -1,3 +1,31 @@
+
+# 1. Disable Credential Guard
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard" /v EnableVirtualizationBasedSecurity /t REG_DWORD /d 0 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v LsaCfgFlags /t REG_DWORD /d 0 /f
+
+# 2. Disable HVCI (Memory Integrity)
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" /v Enabled /t REG_DWORD /d 0 /f
+
+# 3. Re-enable Restricted Admin properly
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v DisableRestrictedAdmin /t REG_DWORD /d 0 /f
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Lsa" /v DisableRestrictedAdminOutboundCreds /t REG_DWORD /d 0 /f
+
+# 4. Allow delegated credentials
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation" /v AllowDefCredentialsWhenNTLMOnly /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation" /v ConcatenateDefaults_AllowDefNTLMOnly /t REG_DWORD /d 1 /f
+
+# 5. Reboot required
+Restart-Computer -Force
+
+
+
+
+
+
+
+
+
+
 # On WIN101-05
 Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa" -Name "DisableRestrictedAdmin" -Value 1
 New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation" -Name "RestrictedRemoteAdministration" -Value 1 -PropertyType DWord -Force
@@ -564,6 +592,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
