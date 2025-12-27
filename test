@@ -1,5 +1,26 @@
 
-Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication"
+# Check Remote Desktop licensing mode
+Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections"
+
+# Check if multiple sessions allowed
+Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fSingleSessionPerUser"
+
+# Is someone else already logged in?
+query user
+
+
+
+
+
+
+
+
+
+
+
+
+Get-ItemProperty -Path "HKLM:\System\Curre
+ntControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication"
 
 
 
@@ -454,6 +475,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
