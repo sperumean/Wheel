@@ -1,4 +1,16 @@
 
+
+# Set hostname in registry
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName" -Name "ComputerName" -Value "WIN101-04"
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\ComputerName\ActiveComputerName" -Name "ComputerName" -Value "WIN101-04"
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "Hostname" -Value "WIN101-04"
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "NV Hostname" -Value "WIN101-04"
+
+# Restart
+Restart-Computer -Force
+
+
+
 $cred = Get-Credential
 Rename-Computer -NewName "WIN101-01" -DomainCredential $cred -Restart
 
@@ -214,6 +226,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
