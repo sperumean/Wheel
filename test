@@ -1,4 +1,17 @@
 
+# Restart RDP service
+Restart-Service TermService -Force
+
+# Wait a moment
+Start-Sleep -Seconds 3
+
+# Check if listening now
+Get-NetTCPConnection -LocalPort 3389 -State Listen
+
+# If still not listening, check RDP configuration
+qwinsta
+
+
 
 # Start Remote Desktop Services
 Start-Service TermService
@@ -245,6 +258,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
