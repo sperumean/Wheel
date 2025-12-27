@@ -1,3 +1,5 @@
+Test-ComputerSecureChannel -Verbose
+
 $cred = Get-Credential  # Administrator@SCHOLARSECURE.LOCAL
 Add-Computer -DomainName scholarsecure.local -Credential $cred -Restart
 
@@ -227,6 +229,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
