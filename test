@@ -1,5 +1,7 @@
 
 
+Add-LocalGroupMember -Group "Remote Desktop Users" -Member "SCHOLARSECURE\Domain Users"
+
 Get-Service TermService
 Get-NetTCPConnection -LocalPort 3389 -State Listen
 
@@ -300,6 +302,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
