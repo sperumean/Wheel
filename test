@@ -1,3 +1,9 @@
+# Allow RDP through firewall
+Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+
+# Verify RDP is listening
+Get-NetTCPConnection -LocalPort 3389 -State Listen
+
 Test-ComputerSecureChannel -Verbose
 
 $cred = Get-Credential  # Administrator@SCHOLARSECURE.LOCAL
@@ -229,6 +235,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
