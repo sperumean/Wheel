@@ -1,3 +1,13 @@
+
+
+# Allow multiple simultaneous sessions
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fSingleSessionPerUser" -Value 0 -Type DWord
+
+# Restart RDP
+Restart-Service TermService -Force
+
+
+
 # Check for logoff scripts
 Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "legalnoticetext" -ErrorAction SilentlyContinue
 
@@ -495,6 +505,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
