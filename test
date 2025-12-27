@@ -1,3 +1,35 @@
+# Re-enable NLA
+Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 1
+Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "SecurityLayer" -Value 2
+
+Restart-Service TermService -Force
+
+
+
+
+# Get logoff events
+Get-WinEvent -LogName Security -MaxEvents 50 | Where-Object {$_.Id -eq 4634 -or $_.Id -eq 4647} | Format-List TimeCreated, Id, Message | Select -First 5
+
+winver
+# Or
+[System.Environment]::OSVersion.Version
+Get-ComputerInfo | Select WindowsVersion, WindowsBuildLabEx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Allow multiple simultaneous sessions
@@ -505,6 +537,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
