@@ -1,3 +1,17 @@
+# Check RDP listener
+qwinsta /server:localhost
+
+# Check registry for RDP configuration
+Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp'
+
+# Try recreating RDP listener
+cmd /c "reg add \"HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp\" /v PortNumber /t REG_DWORD /d 3389 /f"
+
+# Restart the service
+Stop-Service TermService -Force
+Start-Service TermService
+
+
 
 # Restart RDP service
 Restart-Service TermService -Force
@@ -258,6 +272,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
