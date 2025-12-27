@@ -1,3 +1,17 @@
+# Add teststudent01 to local Administrators
+net localgroup Administrators "SCHOLARSECURE\teststudent01" /add
+
+# Verify it's there
+net localgroup Administrators
+
+# Also verify Remote Desktop Users
+net localgroup "Remote Desktop Users"
+
+
+
+
+
+
 # Disable NLA completely
 Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "SecurityLayer" -Value 0 -Type DWord
 Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0 -Type DWord
@@ -429,6 +443,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
