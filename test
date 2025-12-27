@@ -1,4 +1,5 @@
-
+$cred = Get-Credential  # Administrator@SCHOLARSECURE.LOCAL
+Add-Computer -DomainName scholarsecure.local -Credential $cred -Restart
 
 # Set hostname in registry
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName" -Name "ComputerName" -Value "WIN101-05"
@@ -226,6 +227,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
