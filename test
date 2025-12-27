@@ -1,3 +1,13 @@
+
+
+# Start Remote Desktop Services
+Start-Service TermService
+Set-Service TermService -StartupType Automatic
+
+# Verify it's running
+Get-Service TermService
+Get-NetTCPConnection -LocalPort 3389 -State Listen
+
 # Allow RDP through firewall
 Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
@@ -235,6 +245,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
