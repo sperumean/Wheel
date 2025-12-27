@@ -1,4 +1,18 @@
 
+# Check NLA (Network Level Authentication) settings
+Get-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication"
+
+# Should be 0 for SSO, 1 blocks it
+# If it's 1:
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0
+
+# Restart RDP
+Restart-Service TermService -Force
+
+
+
+
+
 # In PowerShell on WIN101-05
 Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa" -Name "DisableRestrictedAdmin"
 
@@ -343,6 +357,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
