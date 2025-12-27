@@ -17,7 +17,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation" /v Conc
 # 5. Reboot required
 Restart-Computer -Force
 
-
+Get-CimInstance -ClassName Win32_DeviceGuard -Namespace root\Microsoft\Windows\DeviceGuard | Select SecurityServicesRunning, VirtualizationBasedSecurityStatus
 
 
 
@@ -592,6 +592,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
