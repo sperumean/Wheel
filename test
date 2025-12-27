@@ -1,5 +1,15 @@
 
 
+# Check if RDP is running
+Get-Service TermService
+Get-NetTCPConnection -LocalPort 3389 -State Listen
+
+# Check Windows Firewall
+Get-NetFirewallRule -DisplayGroup "Remote Desktop" | Select DisplayName, Enabled
+
+
+
+
 Add-LocalGroupMember -Group "Remote Desktop Users" -Member "SCHOLARSECURE\Domain Users"
 
 Get-Service TermService
@@ -302,6 +312,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
