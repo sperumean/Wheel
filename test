@@ -1,3 +1,12 @@
+
+Restart-Service TermService -Force
+Get-Service TermService
+
+
+
+
+
+
 # Create the key with proper parameters
 New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa" -Name "DisableRestrictedAdmin" -Value 0 -PropertyType DWord -Force
 
@@ -373,6 +382,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
