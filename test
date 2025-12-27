@@ -1,4 +1,8 @@
 
+# After reboot to WORKGROUP - rename to generic name
+Rename-Computer -NewName "WIN10-TEMPLATE" -Restart
+
+
 # Remove from domain
 Remove-Computer -UnjoinDomainCredential (Get-Credential) -WorkgroupName "WORKGROUP" -Force -Restart
 
@@ -622,6 +626,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
