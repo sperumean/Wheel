@@ -1,5 +1,17 @@
 
 
+# Can the VM reach anything?
+ping 10.0.101.1  # Gateway
+ping 8.8.8.8     # Internet
+ping 192.168.50.11  # dc02
+
+# Check network adapter
+Get-NetAdapter
+ipconfig /all
+
+
+
+
 # Check if RDP is running
 Get-Service TermService
 Get-NetTCPConnection -LocalPort 3389 -State Listen
@@ -312,6 +324,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
