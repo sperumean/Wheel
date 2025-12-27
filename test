@@ -1,3 +1,23 @@
+
+# Check for corrupted RDP components
+Get-Service | Where-Object {$_.Name -like "*Term*" -or $_.Name -like "*RDP*"}
+
+# Force reset RDP
+cmd /c "netsh advfirewall firewall set rule group=\"remote desktop\" new enable=Yes"
+
+# Delete and recreate the service registry key
+Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -ErrorAction SilentlyContinue
+New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server' -Name 'fDenyTSConnections' -Value 0 -PropertyType DWORD -Force
+
+# Restart computer (sometimes only way to fix RDP)
+Restart-Computer -Force
+
+
+
+
+
+
+
 # Check RDP listener
 qwinsta /server:localhost
 
@@ -272,6 +292,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
