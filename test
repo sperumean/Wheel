@@ -1,3 +1,37 @@
+# 1. Enable Remote Credential Guard (alternative to Restricted Admin)
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa" -Name "LsaCfgFlags" -Value 1 -PropertyType DWord -Force
+
+# 2. Disable Credential Guard if enabled (can conflict)
+# Check if it exists first
+Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -ErrorAction SilentlyContinue
+
+# 3. Add this for Windows 11 Kerberos compatibility
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters" -Name "SupportedEncryptionTypes" -Value 0x7fffffff -PropertyType DWord -Force -ErrorAction SilentlyContinue
+
+# If the path doesn't exist:
+New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos" -Force
+New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters" -Force
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters" -Name "SupportedEncryptionTypes" -Value 0x7fffffff -PropertyType DWord -Force
+
+# 4. Reboot
+Restart-Computer -Force
+
+
+
+
+
+Get-WinEvent -LogName Security -MaxEvents 20 | Where-Object {$_.Id -eq 4625 -or $_.Id -eq 4771} | Format-List
+
+
+
+
+
+
+
+
+
+
+
 
 Restart-Service TermService -Force
 Get-Service TermService
@@ -382,6 +416,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
