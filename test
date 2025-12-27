@@ -1,4 +1,23 @@
 
+# In PowerShell on WIN101-05
+Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa" -Name "DisableRestrictedAdmin"
+
+
+# In PowerShell on WIN101-05
+Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa" -Name "DisableRestrictedAdmin"
+
+
+net localgroup Administrators "SCHOLARSECURE\teststudent01" /add
+
+
+
+
+# Allow Remote Desktop with Restricted Admin
+Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa" -Name "DisableRestrictedAdminOutboundCreds" -Value 0 -Type DWord
+
+
+
+
 
 # Can the VM reach anything?
 ping 10.0.101.1  # Gateway
@@ -324,6 +343,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
