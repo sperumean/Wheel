@@ -1,4 +1,12 @@
 
+
+Get-Service TermService
+Get-NetTCPConnection -LocalPort 3389 -State Listen
+
+
+
+
+
 # Check for corrupted RDP components
 Get-Service | Where-Object {$_.Name -like "*Term*" -or $_.Name -like "*RDP*"}
 
@@ -292,6 +300,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
