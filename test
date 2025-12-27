@@ -1,3 +1,16 @@
+# Disable NLA completely
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "SecurityLayer" -Value 0 -Type DWord
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0 -Type DWord
+
+# Increase max token size (Windows 11 issue)
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Kerberos\Parameters" -Name "MaxTokenSize" -Value 48000 -Type DWord -Force
+
+# CRITICAL: Restart the VM (not just RDP service)
+Restart-Computer -Force
+
+
+
+
 # 1. Enable Remote Credential Guard (alternative to Restricted Admin)
 New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa" -Name "LsaCfgFlags" -Value 1 -PropertyType DWord -Force
 
@@ -416,6 +429,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
