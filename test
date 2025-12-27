@@ -1,3 +1,16 @@
+# Check current IP
+ipconfig | findstr IPv4
+
+# Registry hostname rename
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName" -Name "ComputerName" -Value "WIN101-06"
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\ComputerName\ActiveComputerName" -Name "ComputerName" -Value "WIN101-06"
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "Hostname" -Value "WIN101-06"
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -Name "NV Hostname" -Value "WIN101-06"
+
+# Restart
+Restart-Computer -Force
+
+
 
 # After reboot to WORKGROUP - rename to generic name
 Rename-Computer -NewName "WIN10-TEMPLATE" -Restart
@@ -626,6 +639,7 @@ if ($reboot -eq "y") {
 POWERSHELL
 
 cat /tmp/windows_sso_setup.ps1
+
 
 
 
